@@ -1,27 +1,3 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "backend": {
-      "root": "backend",
-      "framework": "express"
-    },
-    "frontend": {
-      "root": "frontend",
-      "framework": "vite"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": {
-        "service": "backend"
-      }
-    },
-    {
-      "source": "/(.*)",
-      "destination": {
-        "service": "frontend"
-      }
-    }
-  ]
+  "_komentar": "File ini sudah digantikan oleh backend/vercel.json dan frontend/vercel.json. Deploy sekarang dilakukan secara terpisah: satu project Vercel untuk backend (root dir: backend), satu untuk frontend (root dir: frontend)."
 }

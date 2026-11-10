@@ -1,3 +1,2 @@
-import { buatApp } from '../backend/src/app.js';
-
-export default buatApp();
+// File ini sudah dipindahkan ke backend/api/index.js
+// Tidak lagi dipakai sejak deployment dipecah menjadi dua project Vercel terpisah.

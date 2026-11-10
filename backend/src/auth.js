@@ -43,7 +43,9 @@ router.post('/login', batasPerIp, batasPerUsername, wrap(async (req, res) => {
   if (!b || !cocok) throw new AppError(401, 'LOGIN_GAGAL', 'Username atau password salah.');
 
   const token = jwt.sign({ id: b.id, username: b.username }, config.rahasia, { expiresIn: '8h' });
-  res.cookie('token', token, { httpOnly: true, sameSite: 'lax', secure: config.cookieSecure, maxAge: DELAPAN_JAM });
+  // sameSite 'none' diperlukan agar cookie bisa dikirim lintas domain (frontend & backend beda URL).
+  // sameSite 'none' wajib disertai secure: true, yang sudah diatur via COOKIE_SECURE di .env.
+  res.cookie('token', token, { httpOnly: true, sameSite: config.cookieSecure ? 'none' : 'lax', secure: config.cookieSecure, maxAge: DELAPAN_JAM });
 
   // Menyusul tagihan yang mungkin terlewat (mis. server mati saat tanggal 1). Gagal di sini tidak membatalkan login.
   sinkronTagihan().catch((e) => console.error('Sinkron tagihan saat login gagal:', e));
@@ -51,7 +53,7 @@ router.post('/login', batasPerIp, batasPerUsername, wrap(async (req, res) => {
 }));
 
 router.post('/logout', (req, res) => {
-  res.clearCookie('token', { httpOnly: true, sameSite: 'lax', secure: config.cookieSecure });
+  res.clearCookie('token', { httpOnly: true, sameSite: config.cookieSecure ? 'none' : 'lax', secure: config.cookieSecure });
   res.status(204).end();
 });
 

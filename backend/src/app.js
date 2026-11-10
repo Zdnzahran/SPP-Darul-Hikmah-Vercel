@@ -18,6 +18,27 @@ export function buatApp() {
   const app = express();
   app.disable('x-powered-by');
   if (config.production) app.set('trust proxy', 1); // di belakang proxy HTTPS (nginx, PaaS)
+
+  // CORS: izinkan domain frontend yang didaftarkan di ALLOWED_ORIGINS.
+  // Di deploy terpisah (mis. Vercel), frontend dan backend beda domain sehingga perlu header ini.
+  const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    // Izinkan semua origin di development; di production hanya yang terdaftar.
+    if (origin && (!config.production || allowedOrigins.includes(origin))) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    }
+    if (req.method === 'OPTIONS') return res.status(204).end();
+    next();
+  });
+
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
 
