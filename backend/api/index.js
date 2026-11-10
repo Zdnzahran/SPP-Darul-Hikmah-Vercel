@@ -4,3 +4,4 @@ import { buatApp } from '../src/app.js';
 
 const app = buatApp();
 export default app;
+
