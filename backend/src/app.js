@@ -20,6 +20,14 @@ export function buatApp() {
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
 
+  // Pastikan path selalu diawali /api jika di-rewrite tanpa /api (misal di Vercel/serverless)
+  app.use((req, res, next) => {
+    if (!req.url.startsWith('/api')) {
+      req.url = `/api${req.url}`;
+    }
+    next();
+  });
+
   app.use('/api/auth', authRouter); // login terbuka; rute lain di dalamnya memeriksa login sendiri
   app.use('/api', wajibLogin); // semua rute di bawah ini wajib login
   app.use('/api/spp', sppRouter);
