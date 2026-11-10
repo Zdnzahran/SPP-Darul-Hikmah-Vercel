@@ -8,7 +8,8 @@ export class ApiError extends Error {
 
 // VITE_API_URL diisi saat deploy frontend ke Vercel: URL backend Vercel (mis. https://spp-backend.vercel.app).
 // Saat development lokal, dikosongkan agar proxy Vite yang menangani (/api → localhost:4000).
-const BASE_URL = import.meta.env.VITE_API_URL ?? '';
+// Hapus trailing slash agar tidak terjadi double slash pada URL request (mis. //api/...)
+const BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
 /** Semua permintaan ke backend lewat sini. Mengembalikan JSON, atau null untuk 204. */
 export async function api(path, { method = 'GET', body } = {}) {
