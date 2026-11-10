@@ -5,6 +5,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import { config } from './config.js';
 import { AppError, penanganError } from './errors.js';
+import { sinkronTagihan } from './tagihan.js';
 import authRouter, { wajibLogin } from './auth.js';
 import sppRouter from './routes/spp.js';
 import kelasRouter from './routes/kelas.js';
@@ -26,6 +27,24 @@ export function buatApp() {
       req.url = `/api${req.url}`;
     }
     next();
+  });
+
+  app.get('/api/cron', async (req, res) => {
+    try {
+      const hasil = await sinkronTagihan();
+      res.json({
+        sukses: true,
+        pesan: 'Sinkronisasi tagihan selesai.',
+        detail: hasil,
+      });
+    } catch (err) {
+      console.error('Sinkronisasi via cron gagal:', err);
+      res.status(500).json({
+        sukses: false,
+        pesan: 'Gagal melakukan sinkronisasi tagihan.',
+        error: err.message,
+      });
+    }
   });
 
   app.use('/api/auth', authRouter); // login terbuka; rute lain di dalamnya memeriksa login sendiri
